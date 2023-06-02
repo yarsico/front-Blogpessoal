@@ -28,6 +28,7 @@ function App() {
         <Route path="/posts" element={<ListaPostagem />} />
 
 
+
       </Routes>
       <Footer />
     </Router>
