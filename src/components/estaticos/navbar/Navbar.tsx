@@ -1,102 +1,107 @@
-import React from "react";
-import {Box, Typography} from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import AppBar from "@mui/material/AppBar";
-import { TokenState } from "../../store/tokens/TokensReducer";
-import { addToken } from "../../store/tokens/Action";
+import React, { useEffect, useState } from 'react'
+import {Typography, Button, Card, CardActions, CardContent } from "@material-ui/core";
+import {Box} from '@mui/material';
+import './DeletarPostagem.css';
+import { useNavigate, useParams } from 'react-router-dom';
+import Postagem from '../../../models/Postagem';
+import { buscaId, deleteId } from '../../../services/Service';
+import { useSelector } from 'react-redux';
+import { TokenState } from '../../../store/tokens/tokensReducer';
+import { toast } from 'react-toastify';
 
-import "./Navbar.css";
+function DeletarPostagem() {
+    let navigate = useNavigate();
+    const { id } = useParams<{id: string}>();
+    const token = useSelector<TokenState, TokenState["tokens"]>(
+      (state) => state.tokens
+    );
+    const [post, setPosts] = useState<Postagem>()
 
-function Navbar() {
-  
-  const history = useNavigate();
-
-  const dispatch = useDispatch();
-
-  const token = useSelector<TokenState, TokenState['token']>(
-    (state) => state.token
-  )
-
-  function goLogout() {
-    dispatch(addToken(''));
-    toast.info('Usuário desconectado!', {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-      });
-    history("/login");
-  }
-
-  let navbarComponent;
-
-  if(token !== '') {
-    navbarComponent = <AppBar position="static">
-    <Box
-      sx={{ flexGrow: 1 }}
-      style={{ backgroundColor: "#272A53" }}
-      p={4}
-      height={"10vh"}
-      width={"100%"}
-      display={"flex"}
-      justifyContent={"space-between"}
-      alignItems={"center"}
-    >
-      <Box display={'flex'} textAlign={'center'} >
-        <Link to={'/perfil'}><Box textAlign={'center'} className="icon"></Box></Link>
-        <Box m={1}>
-          <Typography variant="h6" color="white">Blog de Animes</Typography>
-        </Box>
-      </Box>
-      <Box display="flex" gap={10}>
-        <Link to={"/home"} className="text-decorator-none">
-          <Box mx={1} style={{ cursor: "pointer" }}>
-            <Typography variant="h6" color="white">Home</Typography>
-          </Box>
-        </Link>
-        <Link to={"/postagens"} className="text-decorator-none">
-          <Box mx={1} style={{ cursor: "pointer" }}>
-            <Typography variant="h6" color="white">
-              Postagens
-            </Typography>
-          </Box>
-        </Link>
-        <Link to={"/temas"} className="text-decorator-none">
-          <Box mx={1} style={{ cursor: "pointer" }}>
-            <Typography variant="h6" color="white">
-              Tema
-            </Typography>
-          </Box>
-        </Link>
-        <Link to={"/formularioTema"} className="text-decorator-none">
-          <Box mx={1} style={{ cursor: "pointer" }}>
-            <Typography variant="h6" color="white">
-              Cadastrar tema
-            </Typography>
-          </Box>
-        </Link>
-      </Box>
+    useEffect(() => {
+        if (token == "") {
+          toast.error('Você precisa estar logado', {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            theme: "colored",
+            progress: undefined,
+        });
+        navigate("/login")
     
-      <Box mx={1} className="text-decorator-none" onClick={goLogout} paddingLeft={"5px"}>
-        <Typography variant="h6" color="white" className="logout-cursor">
-        logout
-        </Typography>
-      </Box>
-    </Box>
-  </AppBar>
-  }
+        }
+    }, [token])
 
+    useEffect(() =>{
+        if(id !== undefined){
+            findById(id)
+        }
+    }, [id])
+
+    async function findById(id: string) {
+        buscaId(`/postagens/${id}`, setPosts, {
+            headers: {
+              'Authorization': token
+            }
+          })
+        }
+
+        function sim() {
+          navigate('/posts')
+            deleteId(`/postagens/${id}`, {
+              headers: {
+                'Authorization': token
+              }
+            });
+            toast.success('Postagem deletada com sucesso', {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: false,
+              theme: "colored",
+              progress: undefined,
+          });
+          }
+        
+          function nao() {
+            navigate('/posts')
+          }
   return (
     <>
-      {navbarComponent}
+      <Box m={2}>
+        <Card variant="outlined" >
+          <CardContent>
+            <Box justifyContent="center">
+              <Typography color="textSecondary" gutterBottom>
+                Deseja deletar a Postagem:
+              </Typography>
+              <Typography color="textSecondary" >
+              {post?.titulo}
+              </Typography>
+            </Box>
+
+          </CardContent>
+          <CardActions>
+            <Box display="flex" justifyContent="start" ml={1.0} mb={2} >
+              <Box mx={2}>
+              <Button onClick={sim} variant="contained" className="marginLeft" size='large' color="primary">
+                Sim
+              </Button>
+              </Box>
+              <Box>
+              <Button  onClick={nao} variant="contained" size='large' color="secondary">
+                Não
+              </Button>
+              </Box>
+            </Box>
+          </CardActions>
+        </Card>
+      </Box>
     </>
   );
 }
-
-export default Navbar;
+export default DeletarPostagem;
