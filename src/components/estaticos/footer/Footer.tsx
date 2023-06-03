@@ -1,46 +1,52 @@
-import React from 'react';
-import InstagramIcon from '@material-ui/icons/Instagram';
-import FacebookIcon from '@material-ui/icons/Facebook';
+import React from "react"
+import { Typography, Box, Grid } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import GitHubIcon from '@material-ui/icons/GitHub'
 import LinkedInIcon from '@material-ui/icons/LinkedIn';
-import {Typography,Grid } from '@material-ui/core';
-import {Box} from '@mui/material';
+import { TokenState } from "../../store/tokens/TokensReducer";
 import './Footer.css'
 
 function Footer() {
-    return (
+
+    const token = useSelector<TokenState, TokenState['token']>(
+        (state) => state.token
+    )
+
+    let footerComponent;
+
+    if(token !== '') {
+        footerComponent = <Grid container direction="row" justifyContent="center" alignItems="center" className="footer" style={{backgroundColor:'#272A53'}}>
+        <Grid>
+            <Box paddingTop={'10px'}>
+                <Box>
+                    <Box paddingBottom={'10px'}>
+                    <Typography variant='subtitle2' align= 'center' gutterBottom style={{color: 'white', fontSize: 15}}>Siga-me nas redes sociais:</Typography>
+                        <Box display={'flex'} justifyContent="center" alignItems="center" paddingTop={'15px'} >
+                            <Box>
+                                <a href="https://github.com/yarsico"></a>
+                                <GitHubIcon style={{ fontSize: 50, color: "white", height: "40px"}}/>
+                            </Box>
+                            <Box>
+                                <a href="https://www.linkedin.com/in/raylane-costa/"></a>
+                                <LinkedInIcon style={{ fontSize: 50, color: "white", height: "40px"}}/>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
+                    <Box justifyContent={'sp'}>
+                    <Typography variant='subtitle2' align= 'center' gutterBottom style={{color: 'white'}}>@2023 Copyright:</Typography>
+                    <Typography variant='subtitle2' align= 'center' gutterBottom style={{color: 'white'}}>Desenvolvido por Jaine Josiane</Typography>
+                    </Box>
+                </Box>
+        </Grid>
+    </Grid>
+    }
+
+    return(
         <>
-            <Grid container direction="row" justifyContent="center" alignItems="center">
-                <Grid alignItems="center" item xs={12}>
-                    <Box style={{ backgroundColor: "#3F51B5", height: "120px" }}>
-                        <Box paddingTop={1} display="flex" alignItems="center" justifyContent="center">
-                            <Typography variant="h5" align="center" gutterBottom style={{ color: "white" }}>Siga-nos nas redes sociais </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="center">
-                            <a href="https://www.facebook.com/generationbrasil" target="_blank" rel="noopener noreferrer">
-                                <FacebookIcon style={{ fontSize: 60, color: "white" }} />
-                            </a>
-                            <a href="https://www.instagram.com/generationbrasil/" target="_blank" rel="noopener noreferrer">
-                                <InstagramIcon style={{ fontSize: 60, color: "white" }} />
-                            </a>
-                            <a href="https://www.linkedin.com/school/generationbrasil/" target="_blank" rel="noopener noreferrer">
-                                <LinkedInIcon style={{ fontSize: 60, color: "white" }} />
-                            </a>
-                        </Box>
-                    </Box>
-                    <Box style={{ backgroundColor: "#303F9F", height: "60px" }}>
-                        <Box paddingTop={1}>
-                            <Typography variant="subtitle2" align="center" gutterBottom style={{ color: "white" }} >© 2020 Copyright:</Typography>
-                        </Box>
-                        <Box>
-                            <a target="_blank" href="https://brasil.generation.org" rel="noopener noreferrer">
-                                <Typography variant="subtitle2" gutterBottom style={{ color: "white" }} align="center">brasil.generation.org</Typography>
-                            </a>
-                        </Box>
-                    </Box>
-                </Grid>
-            </Grid>
+            {footerComponent}
         </>
     )
 }
 
-export default Footer;
+export default Footer
